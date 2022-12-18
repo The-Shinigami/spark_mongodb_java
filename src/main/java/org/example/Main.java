@@ -122,14 +122,16 @@ public class Main {
         transformedDF2=transformedDF2.withColumn("year", functions.split(col("date")," ").getItem(2)).drop(col("date"));
         transformedDF2.show(100);
 
-        writeData(transformedDF2);
+        //To write data in mongodb
+   //     writeData(transformedDF2);
 
 
     }
 
-    public static void writeData(Dataset<Row> data){
-        data.write().format("mongodb").option("uri", "mongodb://127.0.0.1").option("database", "new_data").option("collection", "data").mode("overwrite").save();
-
-    }
+    //To write data in mongodb
+//    public static void writeData(Dataset<Row> data){
+//        data.write().format("mongodb").option("uri", "mongodb://127.0.0.1").option("database", "new_data").option("collection", "data").mode("overwrite").save();
+//
+//    }
 
 }
