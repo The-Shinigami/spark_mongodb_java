@@ -316,8 +316,8 @@ public class DataServiceImpl implements DataService{
     }
 
     @Override
-    public Map getCountQuartileByYear() {
-        Dataset<Row> dfQuartiles = newDataRow.withColumn("quartile", explode(newDataRow.col("quartiles"))).select(col("quartile"),col("quartile").getItem("year").as("yearQ")).where("yearQ = '2021'");
+    public Map getCountQuartileByYear(String year) {
+        Dataset<Row> dfQuartiles = newDataRow.withColumn("quartile", explode(newDataRow.col("quartiles"))).select(col("quartile"),col("quartile").getItem("year").as("yearQ")).where("yearQ = '"+year+"'");
         dfQuartiles.show();
         Dataset<Row> dfCounts = dfQuartiles.select(col("quartile").getItem("quartile").as("quartile")).groupBy("quartile").count();
         List<Map<String, String>> quartileData = dfCounts.toJavaRDD()
@@ -330,7 +330,29 @@ public class DataServiceImpl implements DataService{
         Map result = new LinkedHashMap<>();
         result.put("labels", quartileData.stream().map(m -> m.get("quartile")).collect(Collectors.toList()));
         result.put("data", quartileData.stream().map(m -> m.get("count")).collect(Collectors.toList()));
-        result.put("title", "Quartiles percentage in 2021");
+        result.put("title", "Quartiles Percentage In "+year);
         return result ;
+    }
+
+    @Override
+    public List<Map<String,Object>> getPublications() {
+        List<Map<String, Object>> data = newDataRow.javaRDD().map(row -> {
+            Map<String, Object> dataRow = new HashMap<>();
+            dataRow.put("title", row.getString(row.fieldIndex("title")));
+            dataRow.put("authors", row.getList(row.fieldIndex("authors")));
+            dataRow.put("year", row.get(row.fieldIndex("year")));
+
+            List<Row> quartileRows = row.getList(row.fieldIndex("quartiles"));
+            String quartile = "Not defined yet";
+            if (quartileRows != null && quartileRows.size() > 0){
+                 quartile = quartileRows.stream()
+                    .filter(quartileRow -> quartileRow.getString(quartileRow.fieldIndex("year")).equals(row.getString(row.fieldIndex("year"))))
+                    .map(quartileRow -> quartileRow.getString(quartileRow.fieldIndex("Quartile")))
+                    .findFirst().orElse("Not defined yet");}
+
+            dataRow.put("quartile", quartile);
+            return dataRow;
+        }).collect();
+        return data.stream().filter(item -> !item.get("quartile").equals("Not defined yet")).collect(Collectors.toList());
     }
 }

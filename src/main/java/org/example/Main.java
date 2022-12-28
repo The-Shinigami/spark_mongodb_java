@@ -49,7 +49,13 @@ public class Main {
 
         get("/donut", (req, res) -> {
             res.type("application/json");
-            return dataService.getCountQuartileByYear();
+            String year = req.queryParams("year");
+            return dataService.getCountQuartileByYear(year);
+        }, gson ::toJson);
+
+        get("/publications", (req, res) -> {
+            res.type("application/json");
+            return dataService.getPublications();
         }, gson ::toJson);
 
 

@@ -18,5 +18,6 @@ public interface DataService {
 
     public Map<String, Object> getCountByCountryAndYear();
 
-    public Map getCountQuartileByYear();
+    public Map getCountQuartileByYear(String year);
+    public List<Map<String,Object>> getPublications();
 }
