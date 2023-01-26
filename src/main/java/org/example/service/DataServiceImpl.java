@@ -206,7 +206,7 @@ public class DataServiceImpl implements DataService{
             Map<String, Object> valueMap = (Map<String, Object>) map.get("value");
 
             // Set the title in the value hashmap
-            valueMap.put("title", "Journals for " + year);
+            valueMap.put("title", "Publications for " + year);
         }
 
 
